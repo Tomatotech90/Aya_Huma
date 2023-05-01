@@ -1,7 +1,7 @@
 # Aya_Huma
 
 [![Python 3.6+](https://img.shields.io/badge/Python-3.6+-green.svg?style=flat-square)](https://www.python.org/downloads/)
-![OS](https://img.shields.io/badge/Tested%20On-Linux.svg?style=flat-square)
+![OS](https://img.shields.io/badge/Tested%20On-Linux-yellowgreen.svg?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
 
 This script is a comprehensive cybersecurity tool designed for scanning and analyzing network targets. It utilizes various libraries and tools to perform tasks such as certificate transparency checks, subdomain enumeration, website analysis, WAF detection, and SQL injection scanning, among others.
