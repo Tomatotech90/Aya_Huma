@@ -4,7 +4,7 @@ import requests
 import subprocess
 from urllib.parse import urlparse
 from colorama import Fore, init
-
+# create by ketchup
 def is_ip_address(address):
     pattern = r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"
     return re.match(pattern, address)
