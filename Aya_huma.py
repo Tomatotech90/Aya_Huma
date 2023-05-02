@@ -11,7 +11,7 @@ def is_ip_address(address):
     return re.match(pattern, address)
 
 def scan_target(target):
-    scan_command = f"nmap -sS -sV -oX {target}.xml {target}"
+    scan_command = f"nmap -sS -sV -sC -oX {target}.xml {target}"
     os.system(scan_command)
     with open(f"{target}.xml", "r") as f:
         scan_result = f.read()
