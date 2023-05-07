@@ -8,7 +8,7 @@ This script is a comprehensive cybersecurity tool designed for scanning and anal
 
 ## Dependencies
 
-Before running the script, ensure that you have all the required Python libraries and external tools installed.
+Before running the script, ensure that you have all the required Python libraries and external tools installed, run the script check_requirements.py.
 
 ### Python Libraries
 
