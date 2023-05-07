@@ -1,4 +1,3 @@
-import sys
 import importlib
 import subprocess
 
@@ -8,8 +7,7 @@ def check_requirements():
         'colorama': 'colorama',
         'prettytable': 'prettytable',
         'requests': 'requests',
-        'tqdm': 'tqdm',
-        'arjun': 'arjun'
+        'tqdm': 'tqdm'
     }
 
     tools = {
@@ -44,3 +42,6 @@ def check_requirements():
             print(f"[-] {tool} is not installed. Please install with your package manager, e.g., 'sudo apt install {tool}' or 'brew install {tool}'")
 
     print("\nPlease ensure all required Python libraries and tools are installed before running the script.")
+
+if __name__ == "__main__":
+    check_requirements()
