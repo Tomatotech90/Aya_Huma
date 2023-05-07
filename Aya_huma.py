@@ -242,7 +242,7 @@ def option_14(target):
     print(f"Crawled links saved in {target}_crawl.txt")
     
    
-    def option_15(target):
+def option_15(target):
     print("Performing SMB enumeration...")
     
     # Nmap SMB scripts
@@ -258,7 +258,7 @@ def option_14(target):
     print("SMB enumeration complete. Results saved to 'smb_nmap_output.txt' and 'smb_shares.txt'.")
     
     #null attack
-    def option_16(target):
+def option_16(target):
     print("Attempting SMB null session attack...")
     
     # smbclient - anonymous access
@@ -325,11 +325,12 @@ def main():
         elif choice == 13:
             option_13(target)
         elif choice == 14:
-            option_13(target)
+            option_14(target)
         elif choice == 15:
-            option_13(target)
+            option_15(target)
         elif choice == 16:
-            option_13(target)
+            option_16(target)
+
 
 if __name__ == "__main__":
     main()
