@@ -9,6 +9,7 @@ from time import sleep
 from urllib.parse import urlparse
 from colorama import Fore, init
 from bs4 import BeautifulSoup
+from prettytable import PrettyTable
 
 def is_ip_address(address):
     pattern = r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"
@@ -96,24 +97,33 @@ created_by = "Created by ketchup"
 version = "Version 1.0"
 
 def menu():
-    print("\nOptions:")
-    print("1. Use openssl s_client to find certificate transparency")
-    print("2. Check crt.sh for subdomains")
-    print("3. Use wayback machine to get URLs")
-    print("4. Check headers with curl")
-    print("5. Whatweb - analyze website")
-    print("6. WAF detection with wafw00f")
-    print("7. Analyze website with aquatone")
-    print("8. SQL injection scan with sqlmap")
-    print("9. Directory scanning with dirb and ffuf in wsdl")
-    print("10. Test SOAP endpoint with client.py")
-    print("11. Automate API calls with automate.py")
-    print("12. Ping target")
-    print("13. Test XML-RPC with curl")
-    print("14. Web crawling function and redirect links")
-    print("15. SMB Enumeration")
-    print("16. SMB Null Session Attack")
-    print("0. Exit")
+    init(autoreset=True)  # Enable auto-reset for colorama
+
+    options_table = PrettyTable()
+    options_table.field_names = [f"{Fore.GREEN}Option", f"{Fore.GREEN}Description"]
+
+    options_table.add_row(["1", "OpenSSL s_client"])
+    options_table.add_row(["2", "Check crt.sh for subdomains"])
+    options_table.add_row(["3", "Check headers with Curl"])
+    options_table.add_row(["4", "Wayback Machine URLs"])
+    options_table.add_row(["5", "WhatWeb"])
+    options_table.add_row(["6", "WAF detection with wafw00f"])
+    options_table.add_row(["7", "Analyze website with aquatone"])
+    options_table.add_row(["8", "SQL injection scan with sqlmap"])
+    options_table.add_row(["9", "Directory scanning with dirb and ffuf in wsdl"])
+    options_table.add_row(["10", "Test SOAP endpoint with client.py"])
+    options_table.add_row(["11", "Automate API calls with automate.py"])
+    options_table.add_row(["12", "Ping target"])
+    options_table.add_row(["13", "Test XML-RPC with curl"])
+    options_table.add_row(["14", "Web crawling function and redirect links"])
+    options_table.add_row(["15", "SMB Enumeration"])
+    options_table.add_row(["16", "SMB Null Session Attack"])
+    options_table.add_row(["17", "SNMP Checks"])
+    options_table.add_row(["18", "Discover hidden HTTP parameters with Arjun"])
+    options_table.add_row(["0", "Exit"])
+
+    print(options_table)
+
 
 def option_1(target):
     print("Running OpenSSL s_client...")
@@ -268,6 +278,39 @@ def option_16(target):
     
     print("SMB null session attack complete. Results saved to 'smb_null_session.txt'.")
     
+    
+def option_17(target):
+    print("Performing SNMP checks...")
+
+    # Enumerate SMTP users using nmap script
+    print("Enumerating SMTP users using nmap script...")
+    os.system(f"nmap -p25 --script smtp-enum-users {target}")
+
+    # Check SNMP using snmp-check with public and private community strings, and SNMP v1 and v2c
+    print("Checking SNMP using snmp-check...")
+    os.system(f"snmp-check {target} -c public")
+    os.system(f"snmp-check {target} -c private")
+    os.system(f"snmp-check {target} -c public -v2c")
+    os.system(f"snmp-check {target} -c private -v2c")
+
+    print("SNMP checks complete.")
+    
+def option_18(target):
+    print("Discovering hidden HTTP parameters with Arjun...")
+
+    # Run Arjun to discover hidden HTTP parameters
+    os.system(f"arjun -u http://{target} --get -o {target}_hidden_parameters.txt")
+
+    # Read the output file and display the discovered parameters
+    with open(f"{target}_hidden_parameters.txt", "r") as file:
+        hidden_parameters = file.read()
+        print("\nDiscovered hidden HTTP parameters:")
+        print(hidden_parameters)
+
+    print(f"Hidden HTTP parameters saved in {target}_hidden_parameters.txt")
+
+
+    
 
 def main():
     display_colored_art(your_ascii_art)
@@ -330,7 +373,10 @@ def main():
             option_15(target)
         elif choice == 16:
             option_16(target)
-
+        elif choice == 17:
+            option_17(target)
+        elif choice == 18:
+            option_18(target)
 
 if __name__ == "__main__":
     main()
