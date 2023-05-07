@@ -3,8 +3,12 @@ import re
 import requests
 import socket
 import subprocess
+import random
+from tqdm import tqdm
+from time import sleep
 from urllib.parse import urlparse
 from colorama import Fore, init
+from bs4 import BeautifulSoup
 
 def is_ip_address(address):
     pattern = r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"
@@ -28,6 +32,14 @@ def check_website(scan_result):
 def get_target():
     target = input("What is the website? ")
     return target
+
+# Add this function for rainbow progress bars
+def rainbow_progress(iterations, sleep_duration):
+    colors = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.CYAN, Fore.BLUE, Fore.MAGENTA]
+
+    for i in tqdm(range(iterations), desc="Progress", ncols=80, bar_format="{desc}: {bar}"):
+        print(colors[i % len(colors)], end="")
+        sleep(sleep_duration)
 
 def display_colored_art(art):
     init(autoreset=True)
@@ -93,29 +105,44 @@ def menu():
     print("6. WAF detection with wafw00f")
     print("7. Analyze website with aquatone")
     print("8. SQL injection scan with sqlmap")
-    print("9. Directory scanning with dirb and ffuf")
+    print("9. Directory scanning with dirb and ffuf in wsdl")
     print("10. Test SOAP endpoint with client.py")
     print("11. Automate API calls with automate.py")
     print("12. Ping target")
     print("13. Test XML-RPC with curl")
+    print("14. Web crawling function and redirect links")
+    print("15. SMB Enumeration")
+    print("16. SMB Null Session Attack")
     print("0. Exit")
 
 def option_1(target):
+    print("Running OpenSSL s_client...")
+    rainbow_progress(10, 0.1)
     os.system(f"openssl s_client -connect {target}:443 -servername {target} -showcerts")
 
 def option_2(target):
+    print("Running Check crt.sh for subdomains...")
+    rainbow_progress(10, 0.1)
     os.system(f'curl -s "https://crt.sh/?q={target}&output=json" | jq -r \'.[] | "\(.name_value)\n\(.common_name)"\' | sort -u > "{target}_crt.sh.txt"')
 
 def option_3(target):
+    print("Checking the Headers with Curl...")
+    rainbow_progress(10, 0.1)
     os.system(f"waybackurls -dates {target} > waybackurls.txt")
 
 def option_4(target):
+    print("Running Check crt.sh for subdomains...")
+    rainbow_progress(10, 0.1)
     os.system(f"curl -I 'http://{target}'")
 
 def option_5(target):
+    print("Checking WhatWeb...")
+    rainbow_progress(10, 0.1)
     os.system(f"whatweb -a3 {target} -v")
 
 def option_6(target):
+    print("Running WafW00f...")
+    rainbow_progress(10, 0.1)
     os.system(f"wafw00f -v {target}")
 
 def option_7(target):
@@ -162,6 +189,8 @@ def option_8(target):
     else:
         print("[-] No suggestions found from the first scan.")
 def option_9(target):
+    print("Running Check for subdomains Wsdl...")
+    rainbow_progress(10, 0.1)
     os.system(f"dirb  http://{target}/")
     os.system(f"curl {target}/wsdl")
     os.system(f"curl {target}/wsdl?wsdl")
@@ -192,7 +221,53 @@ def option_12(target):
     os.system(f"ping {target};ls")
 
 def option_13(target):
+    print("Testing XML-RPC with curl...")
+    rainbow_progress(10, 0.1)
     os.system(f'''curl -X POST -d "<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value>admin</value></param><param><value>CORRECT-PASSWORD</value></param></params></methodCall>" {target}/xmlrpc.php''')
+
+ # Add this function to crawl the target website
+def option_14(target):
+    print("Crawling target website...")
+    rainbow_progress(10, 0.1)
+    
+    url = f"http://{target}"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    
+    with open(f"{target}_crawl.txt", "w") as file:
+        for link in soup.find_all("a"):
+            href = link.get("href")
+            file.write(f"{href}\n")
+
+    print(f"Crawled links saved in {target}_crawl.txt")
+    
+   
+    def option_15(target):
+    print("Performing SMB enumeration...")
+    
+    # Nmap SMB scripts
+    print("Running Nmap SMB scripts...")
+    nmap_smb_command = f"nmap -p 445 --script smb-enum-shares,smb-enum-users,smb-os-discovery,smb-security-mode,smb-protocols,smb2-security-mode,smb2-capabilities {target} -oN smb_nmap_output.txt"
+    os.system(nmap_smb_command)
+    
+    # smbclient - listing shares
+    print("Using smbclient to list shares...")
+    smbclient_command = f"smbclient -L {target} -N > smb_shares.txt"
+    os.system(smbclient_command)
+    
+    print("SMB enumeration complete. Results saved to 'smb_nmap_output.txt' and 'smb_shares.txt'.")
+    
+    #null attack
+    def option_16(target):
+    print("Attempting SMB null session attack...")
+    
+    # smbclient - anonymous access
+    print("Trying to access SMB shares with anonymous login...")
+    smbclient_command = f"smbclient -L {target} -U ''%'' > smb_null_session.txt"
+    os.system(smbclient_command)
+    
+    print("SMB null session attack complete. Results saved to 'smb_null_session.txt'.")
+    
 
 def main():
     display_colored_art(your_ascii_art)
@@ -248,6 +323,12 @@ def main():
         elif choice == 12:
             option_12(target)
         elif choice == 13:
+            option_13(target)
+        elif choice == 14:
+            option_13(target)
+        elif choice == 15:
+            option_13(target)
+        elif choice == 16:
             option_13(target)
 
 if __name__ == "__main__":
