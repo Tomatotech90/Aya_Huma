@@ -13,7 +13,9 @@ def check_requirements():
     tools = {
         'curl': 'curl',
         'nmap': 'nmap',
+        'nikto': 'nikto',
         'openssl': 'openssl',
+        'searchsploit': 'searchsploit',
         'wafw00f': 'wafw00f',
         'whatweb': 'whatweb',
         'waybackurls': 'waybackurls',
