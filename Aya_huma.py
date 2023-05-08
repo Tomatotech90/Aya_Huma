@@ -120,6 +120,8 @@ def menu():
     options_table.add_row(["16", "SMB Null Session Attack"])
     options_table.add_row(["17", "SNMP Checks"])
     options_table.add_row(["18", "Discover hidden HTTP parameters with Arjun"])
+    options_table.add_row(["19", "Nikto stealth and depth scan"])
+    options_table.add_row(["20", "Search for vulnerabilities using Searchsploit and Nmap results"])
     options_table.add_row(["0", "Exit"])
 
     print(options_table)
@@ -308,6 +310,44 @@ def option_18(target):
         print(hidden_parameters)
 
     print(f"Hidden HTTP parameters saved in {target}_hidden_parameters.txt")
+    
+def option_19(target):
+    print("Running Nikto stealth and depth scan...")
+    rainbow_progress(10, 0.1)
+    
+    # Run the Nikto scan with stealth and depth options, and save the results to a file
+    nikto_command = f"nikto -h {target} -Tuning 2 -maxtime 5m -Format txt -output nikto_stealth_depth_scan.txt"
+    os.system(nikto_command)
+    
+    print("Nikto stealth and depth scan complete. Results saved in 'nikto_stealth_depth_scan.txt'.")
+    
+def parse_nmap_services(filename):
+    services = set()
+    with open(filename, "r") as file:
+        for line in file.readlines():
+            match = re.search(r"(\d+)/tcp\s+open\s+(\S+)", line)
+            if match:
+                services.add(match.group(2))
+    return services
+
+def option_20(target):
+    print("Searching for vulnerabilities using Searchsploit and Nmap results...")
+
+    # Read the Nmap results file from the first scan
+    nmap_results_file = "nmap_scan_results.txt"
+
+    if not os.path.exists(nmap_results_file):
+        print("Nmap results file not found. Please run the first Nmap scan (option 1) before using this option.")
+        return
+
+    services = parse_nmap_services(nmap_results_file)
+    
+    # Run Searchsploit for each service found in the Nmap results
+    for service in services:
+        print(f"Searching for vulnerabilities in {service}...")
+        searchsploit_command = f"searchsploit {service}"
+        os.system(searchsploit_command)  
+
 
 
     
@@ -377,6 +417,12 @@ def main():
             option_17(target)
         elif choice == 18:
             option_18(target)
+        elif option == "19":
+            option_19(target)
+        elif option == "20":
+            option_20(target)
+
+
 
 if __name__ == "__main__":
     main()
