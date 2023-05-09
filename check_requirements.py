@@ -7,7 +7,8 @@ def check_requirements():
         'colorama': 'colorama',
         'prettytable': 'prettytable',
         'requests': 'requests',
-        'tqdm': 'tqdm'
+        'tqdm': 'tqdm',
+        'arjun': 'arjun'
     }
 
     tools = {
@@ -21,11 +22,12 @@ def check_requirements():
         'waybackurls': 'waybackurls',
         'sqlmap': 'sqlmap',
         'dirb': 'dirb',
-        'ffuf': 'ffuf'
+        'ffuf': 'ffuf',
+        'arjun': 'arjun'
     }
 
     print("Checking Python libraries...")
-    with open("requirements.txt", "r") as req_file:
+    with open("requirement.txt", "r") as req_file:
         requirements = req_file.readlines()
         for library in requirements:
             library = library.strip()
