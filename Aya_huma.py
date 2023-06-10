@@ -122,6 +122,7 @@ def menu():
     options_table.add_row(["18", "Discover hidden HTTP parameters with Arjun"])
     options_table.add_row(["19", "Nikto stealth and depth scan"])
     options_table.add_row(["20", "Search for vulnerabilities using Searchsploit and Nmap results"])
+    options_table.add_row(["21", "OPen Redirects"])
     options_table.add_row(["0", "Exit"])
 
     print(options_table)
@@ -330,6 +331,7 @@ def parse_nmap_services(filename):
                 services.add(match.group(2))
     return services
 
+
 def option_20(target):
     print("Searching for vulnerabilities using Searchsploit and Nmap results...")
 
@@ -348,16 +350,60 @@ def option_20(target):
         searchsploit_command = f"searchsploit {service}"
         os.system(searchsploit_command)  
 
+def option_21(target):
+    # List of potentially malicious websites
+    dangerous_urls = [
+        "http://maliciouswebsite.com",
+        "http://phishingsite.com",
+        # More malicious URLs can be added here for testing
+    ]
+
+    # List of trusted websites
+    trusted_websites = [
+        "http://trustedwebsite.com",
+        "http://anothertrustedwebsite.com",
+        # More trusted websites can be added here
+    ]
+
+    def check_redirects(target):
+        # Redirection parameters to check
+        params = ["url=", "link=", "goto=", "target=", "destination="]
+        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'CONNECT']
+
+        for trusted_website in trusted_websites:
+            for dangerous_url in dangerous_urls:
+                for param in params:
+                    # Appending the trusted website to the target
+                    full_url = target + "?" + param + trusted_website + "/" + dangerous_url
+
+                    # Checking redirection in various HTTP methods
+                    for method in http_methods:
+                        # URL encode the dangerous URL
+                        encoded_dangerous_url = quote(dangerous_url)
+
+                        # Construct the request with encoded URL
+                        encoded_full_url = target + "?" + param + trusted_website + "/" + encoded_dangerous_url
+                        response = requests.request(method, encoded_full_url, allow_redirects=False)
+
+                        # If the response status code is 3xx, it indicates a redirection
+                        if response.status_code // 100 == 3:
+                            print(f"Potential open redirect vulnerability using {method} at: {encoded_full_url}")
+
+                        # If the 'location' header points to the dangerous URL, it's a sign of a possible open redirect vulnerability
+                        if "location" in response.headers:
+                            if dangerous_url in response.headers['location']:
+                                print(f"Potential open redirect vulnerability using {method} at: {encoded_full_url}")
+
 
 
     
 
 def main():
     display_colored_art(your_ascii_art)
-     
+
     print("\n" + created_by)
     print(version + "\n")
-     
+
     input("Press Enter to continue...")
 
     T = input("Enter target (IP or website): ")
@@ -417,12 +463,12 @@ def main():
             option_17(target)
         elif choice == 18:
             option_18(target)
-        elif option == "19":
+        elif choice == 19:
             option_19(target)
-        elif option == "20":
-            option_20(target)
-
-
+        elif choice == 20:
+            option_20(target) 
+        elif choice == 21:
+            option_21(target)
 
 if __name__ == "__main__":
     main()
